@@ -1,8 +1,8 @@
 //creating variables
 
-let gang, duck, squareSize, score, speed,
+let gang, duck, squareSize, score, speed, topScore,
     updateDelay, direction, new_direction,
-    addNew, cursors, scoreTextValue, speedTextValue, textStyle_Key, textStyle_Value;
+    addNew, cursors, scoreTextValue, speedTextValue, topScoreTextValue, textStyle_Key, textStyle_Value;
 
 //creating game
 
@@ -54,12 +54,12 @@ let Game = {
 
         // top score
 
-        let topScore = localStorage.getItem('topScore');
+        topScore = localStorage.getItem('topScore');
         if(topScore  === null) {
-            localStorage.setItem('highscore', 0);    
-            highScore = 0;}
+            localStorage.setItem('topscore', 0);    
+            topScore = 0;}
         game.add.text(1100, 30, "TOP SCORE", textStyle_Key);
-        topScoreTextValue = game.add.text(1280, 25, topScore.toString(), textStyle_Value);
+        topScoreTextValue = game.add.text(1290, 25, topScore.toString(), textStyle_Value);
 
     },
     //moving
@@ -143,10 +143,10 @@ let Game = {
         }
 
     },
-    // new duck adding
+    // new duck spawn
     generateDuck: function(){
-        let randomX = Math.floor(Math.random() * 28 ) * squareSize,
-            randomY = Math.floor(Math.random() * 20 ) * squareSize;
+        let randomX = Math.floor(Math.random() * 28) * squareSize,
+            randomY = Math.floor(Math.random() * 20) * squareSize;
        
         duck = game.add.sprite(randomX, randomY, 'duck');
     },
