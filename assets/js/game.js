@@ -145,10 +145,10 @@ let Game = {
     },
     // new duck adding
     generateDuck: function(){
-        let randomX = Math.floor(Math.random() * 25 ) * squareSize,
+        let randomX = Math.floor(Math.random() * 28 ) * squareSize,
             randomY = Math.floor(Math.random() * 20 ) * squareSize;
        
-        duck = game.add.sprite(randomX + 150, randomY, 'duck');
+        duck = game.add.sprite(randomX, randomY, 'duck');
     },
 
     duckCollision: function() {
