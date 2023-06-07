@@ -1,15 +1,16 @@
-let Menu = {
+export const Menu = {
 
-    preload : function() {
-        game.load.image('menu', './assets/images/menu.png');
+    preload () {
+        this.load.image('menu', './assets/images/menu.png');
     },
 
-    create: function () {
+    create () {
         this.add.button(0, 0, 'menu', this.startGame, this);
     },
 
-    startGame: function () {
+    startGame () {
         this.state.start('Game');
     }
 
 };
+
