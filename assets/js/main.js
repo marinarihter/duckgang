@@ -1,15 +1,18 @@
 import { Menu } from "./menu.js";
-import { Game } from "./game.js";
 import { GameOver } from "./gameOver.js";
+import { Game } from "./game.js";
 
-const game = new Phaser.Game(1400, 1000, Phaser.AUTO, '');
-game.state.add('Menu', Menu);
 
-game.state.start('Menu');
 
-game.state.add('Game', Game);
-game.state.add('GameOver', GameOver);
+const config = {
+    type: Phaser.AUTO,
+    width: 1400,
+    height: 1000,
+    backgroundColor: "#2B1764",
+    scene: [Menu, Game, GameOver]
+};
 
+const game = new Phaser.Game(config);
 
 
 

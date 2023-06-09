@@ -1,16 +1,18 @@
-export const Menu = {
+export class Menu extends Phaser.Scene {
+    constructor() {
+    super("Menu");
+    }
 
     preload () {
         this.load.image('menu', './assets/images/menu.png');
-    },
-
-    create () {
-        this.add.button(0, 0, 'menu', this.startGame, this);
-    },
-
-    startGame () {
-        this.state.start('Game');
     }
 
+    create () {
+        this.add.sprite(700, 500, 'menu')
+        
+        this.input.on("pointerdown", (pointer) => {
+            this.scene.start("Game");
+        });
+    }
 };
 

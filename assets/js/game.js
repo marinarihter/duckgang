@@ -1,42 +1,39 @@
-import {DIRECTION, textStyleKey, textStyleValue} from "./const.js";;
-import {getTopScoreFromLocalStorage} from "./storage.js";
+import {DIRECTION, textStyleKey, textStyleValue, STORAGE_KEY} from "./const.js";
 
-//creating variables
-let gang, duck, squareSize, score, speed,
-updateDelay, direction, newDirection,
-gangDuckAddition, cursors, scoreTextValue, speedTextValue, topScoreTextValue
+export class Game extends Phaser.Scene {
+    gang = [];                    
+    duck = {};                    
+    squareSize = 50;               
+    score = 0;
+    speed = 0;    
+    topScore = 0;                  
+    updateDelay = 0; 
+    direction = DIRECTION.RIGHT;          
+    newDirection = null;       
+    gangDuckAddition = false;
+    cursors;
+    scoreTextValue; 
+    speedTextValue; 
+    topScoreTextValue;
 
-//creating game
-
-const Game = {
+    constructor() {
+        super("Game");
+    }
+        // game elements images
 
     preload () {
         this.load.image('gang', './assets/images/bad-duck.png');
         this.load.image('duck', './assets/images/good-duck.png');
-    },
+    }
 
     create () {
 
-        //initialising variables
-
-        gang = [];
-        duck = {};
-        squareSize = 50;
-        score = 0;
-        speed = 0;
-        updateDelay = 0;
-        direction = DIRECTION.RIGHT;
-        newDirection = null;
-        gangDuckAddition = false;
-
         // setting up a Phaser controller for keyboard input.
-        cursors = this.input.keyboard.createCursorKeys();
-
-        this.stage.backgroundColor = '#2B1764';
+        this.cursors = this.input.keyboard.createCursorKeys();
 
         // initial stack state
         for(let i = 0; i < 5; i++){
-            gang[i] = this.add.sprite(200+i*squareSize, 200, 'gang');
+            this.gang[i] = this.add.sprite(200+i*this.squareSize, 200, 'gang');
         }
 
         // first duck adding
@@ -44,144 +41,157 @@ const Game = {
 
         // score
         this.add.text(50, 30, "SCORE", textStyleKey);
-        scoreTextValue = this.add.text(170, 25, score.toString(), textStyleValue);
+        this.scoreTextValue = this.add.text(170, 25, `${this.score}`, textStyleValue);
 
         // speed
         this.add.text(600, 30, "SPEED", textStyleKey);
-        speedTextValue = this.add.text(715, 25, speed.toString(), textStyleValue);
+        this.speedTextValue = this.add.text(715, 25, "0", textStyleValue);
 
         // top score
-        let topScore = getTopScoreFromLocalStorage ();
-        let displyedTopScore = topScore.toString();
+
+        this.topScore = localStorage.getItem(STORAGE_KEY) || 0;
         this.add.text(1100, 30, "TOP SCORE", textStyleKey);
-        topScoreTextValue = this.add.text(1290, 25, displyedTopScore, textStyleValue);
-        console.log (topScoreTextValue)
-    },
+        this.topScoreTextValue = this.add.text(1290, 25, `${this.topScore}`, textStyleValue)
+
+    }
+
     //moving
 
     update () {
 
         //wrong direction movement prevention
 
-        if (cursors.right.isDown && direction!== DIRECTION.LEFT)
+        if (this.cursors.right.isDown && this.direction!== DIRECTION.LEFT)
         {
-            newDirection = DIRECTION.RIGHT;
+            this.newDirection = DIRECTION.RIGHT;
         }
-        else if (cursors.left.isDown && direction!=DIRECTION.RIGHT)
+        else if (this.cursors.left.isDown && this.direction!== DIRECTION.RIGHT)
         {
-            newDirection = DIRECTION.LEFT;
+            this.newDirection = DIRECTION.LEFT;
         }
-        else if (cursors.up.isDown && direction!=DIRECTION.DOWN)
+        else if (this.cursors.up.isDown && this.direction!== DIRECTION.DOWN)
         {
-            newDirection = DIRECTION.UP;
+            this.newDirection = DIRECTION.UP;
         }
-        else if (cursors.down.isDown && direction!=DIRECTION.UP)
+        else if (this.cursors.down.isDown && this.direction!== DIRECTION.UP)
         {
-            newDirection = DIRECTION.DOWN;
+            this.newDirection = DIRECTION.DOWN;
         }
     
-        //speed 
+        //speed change
+        
+        this.speed = Math.min(10, Math.floor(this.score/5));
+        this.speedTextValue.text = `${this.speed}`;
 
-        speed = Math.min(10, Math.floor(score/5));
-        speedTextValue.text = '' + speed;
-
-        updateDelay++;
+        this.updateDelay++;
     
-        if (updateDelay % (10 - speed) == 0) {    
+        if (this.updateDelay % (10 - this.speed) === 0) {    
  
-            let firstCell = gang[gang.length - 1],
-                lastCell = gang.shift(),
-                oldLastCellx = lastCell.x,
-                oldLastCelly = lastCell.y;
+            let firstCell = this.gang[this.gang.length - 1];
+            let lastCell = this.gang.shift();
+            let oldLastCellx = lastCell.x;
+            let oldLastCelly = lastCell.y;
     
             //change direction
-            if(newDirection){
-                direction = newDirection;
-                newDirection = null;
+            if(this.newDirection){
+                this.direction = this.newDirection;
+                this.newDirection = null;
             }
     
             // change the last cell's coordinates
     
-            if(direction == DIRECTION.RIGHT){
+            if(this.direction === DIRECTION.RIGHT){
     
                 lastCell.x = firstCell.x + 50;
                 lastCell.y = firstCell.y;
-                if(this.isOutside) lastCell.x = this.world.bounds.x; 
             }
-            else if(direction == DIRECTION.LEFT){
+            else if(this.direction === DIRECTION.LEFT){
                 lastCell.x = firstCell.x - 50;
                 lastCell.y = firstCell.y;
-                if(this.isOutside) lastCell.x = this.world.bounds.width - 50;
             }
-            else if(direction == DIRECTION.UP){
+            else if(this.direction === DIRECTION.UP){
                 lastCell.x = firstCell.x;
                 lastCell.y = firstCell.y - 50;
-                if(this.isOutside) lastCell.y = this.world.bounds.height - 50;
             }
-            else if(direction == DIRECTION.DOWN){
+            else if(this.direction === DIRECTION.DOWN){
                 lastCell.x = firstCell.x;
                 lastCell.y = firstCell.y + 50;
-                if(this.isOutside) lastCell.y = this.world.bounds.y;
             }
-            gang.push(lastCell);
+            this.gang.push(lastCell);
             firstCell = lastCell;
         
-            if(gangDuckAddition){
-                gang.unshift(this.add.sprite(oldLastCellx, oldLastCelly, 'gang'));
-                gangDuckAddition = false;
+            if(this.gangDuckAddition){
+                this.gang.unshift(
+                    this.add.sprite(oldLastCellx, oldLastCelly, 'gang'));
+                this.gangDuckAddition = false;
             }
 
             this.duckCollision();
-
-            this.selfCollision(firstCell);
-
+          
             this.checkOutside(firstCell);
+            
+            this.selfCollision(firstCell);
         }
 
-    },
+    }
     // new duck spawn
     generateDuck () {
-        let randomX = Math.floor(Math.random() * 28) * squareSize,
-            randomY = Math.floor(Math.random() * 20) * squareSize;
+        let randomX = Math.floor(Math.random() * 28) * this.squareSize,
+            randomY = Math.floor(Math.random() * 20) * this.squareSize;
        
-        duck = this.add.sprite(randomX, randomY, 'duck');
-    },
+            this.duck = this.add.sprite(randomX, randomY, 'duck');
+    }
 
     duckCollision () {
-        for(let i = 0; i < gang.length; i++){
-            if(gang[i].x == duck.x && gang[i].y == duck.y){
+        for(let i = 0; i < this.gang.length; i++){
+            if(this.gang[i].x == this.duck.x && this.gang[i].y == this.duck.y){
     
-                gangDuckAddition = true;
+                this.gangDuckAddition = true;
 
-                duck.destroy();
+                this.duck.destroy();
 
                 this.generateDuck();
     
-                score++;
+                this.score++;
 
-                scoreTextValue.text = score.toString();
+                this.scoreTextValue.text = `${this.score}`
+
+                if (this.score > this.topScore) {
+                    this.topScore = this.score;
+                    this.topScoreTextValue.setText(this.topScore);
+                    localStorage.setItem(STORAGE_KEY, this.topScore);
+                }
+
                 }
             }    
-    },
+    }
     
     selfCollision (head) {
 
-        for(let i = 0; i < gang.length - 1; i++){
-            if(head.x == gang[i].x && head.y == gang[i].y){
-                this.state.start('GameOver');
+        for(let i = 0; i < this.gang.length - 1; i++){
+            if(head.x == this.gang[i].x && head.y == this.gang[i].y){
+                this.gang = [];
+                this.scene.start("GameOver", { score: this.score });
             }
         }
     
-    },
+    }
     
     checkOutside (head) {
-        
-        if(head.x >= 1440 || head.x < 0 || head.y >= 1080 || head.y < 0){
-            this.isOutside = true;
-        } else {
-        this.isOutside = false;
+        if (head.x > 1400) {
+            head.x = 0
+        }
+    
+        else if (head.x < 0) {
+            head.x = 1400-50
+        }
+    
+        else if (head.y >= 1000) {
+            head.y = 0
+        }
+    
+        else if (head.y < 0) {
+            head.y = 1000-50
         }
     }
 };
-
-export { Game, score };
