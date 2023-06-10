@@ -19,6 +19,6 @@ export class GameOver extends Phaser.Scene{
             );
 
         this.input.on("pointerdown", (pointer) => {
-            this.scene.start("Menu");
+            this.scene.start("Game");
         });       
     }};
