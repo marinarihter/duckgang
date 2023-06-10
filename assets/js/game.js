@@ -22,6 +22,10 @@ export class Game extends Phaser.Scene {
         // game elements images
 
     preload () {
+
+        this.score = 0;
+        this.speed = 0;
+
         this.load.image('gang', './assets/images/bad-duck.png');
         this.load.image('duck', './assets/images/good-duck.png');
     }
@@ -33,7 +37,7 @@ export class Game extends Phaser.Scene {
 
         // initial stack state
         for(let i = 0; i < 5; i++){
-            this.gang[i] = this.add.sprite(200+i*this.squareSize, 200, 'gang');
+            this.gang[i] = this.add.sprite(225+i*this.squareSize, 225, 'gang');
         }
 
         // first duck adding
@@ -136,8 +140,8 @@ export class Game extends Phaser.Scene {
     }
     // new duck spawn
     generateDuck () {
-        let randomX = Math.floor(Math.random() * 28) * this.squareSize,
-            randomY = Math.floor(Math.random() * 20) * this.squareSize;
+        let randomX = Math.floor(Math.random() * 28) * this.squareSize + 25,
+            randomY = Math.floor(Math.random() * 20) * this.squareSize + 25;
        
             this.duck = this.add.sprite(randomX, randomY, 'duck');
     }
@@ -178,20 +182,20 @@ export class Game extends Phaser.Scene {
     }
     
     checkOutside (head) {
-        if (head.x > 1400) {
-            head.x = 0
+        if (head.x > 1425) {
+            head.x = 25
         }
     
-        else if (head.x < 0) {
-            head.x = 1400-50
+        else if (head.x < 25) {
+            head.x = 1425
         }
     
-        else if (head.y >= 1000) {
-            head.y = 0
+        else if (head.y >= 1025) {
+            head.y = 25
         }
     
-        else if (head.y < 0) {
-            head.y = 1000-50
+        else if (head.y < 25) {
+            head.y = 1025
         }
     }
 };
